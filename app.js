@@ -26,14 +26,45 @@ function getJapanTime() {
   return new Intl.DateTimeFormat('ja-JP', options).format(now);
 }
 
+//ログイン画面
+app.get('/login',(req,res)=>{
+    res.render('login');
+});
+
+//アカウント作成画面
+app.get('/register',(req,res)=>{
+    res.render('register');
+});
+
+//アカウント作成処理
+app.post('/register',(req,res)=>{
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
+    db.run(
+        'insert into users(username,email,password) values(?,?,?)',
+        [username,email,password],
+        (err)=>{
+            if (err) {
+                console.error(err.message);
+                res.status(500).send("データベースエラー");
+              } else {
+                
+                res.redirect('/login');
+              }
+        }
+    )
+})
+
+
 // タスクの表示
-app.get('/', (req, res) => {
+app.get('/index', (req, res) => {
   db.all("SELECT * FROM todos", [], (err, rows) => {
     if (err) {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.render('top', { todos: rows });
+      res.render('index', { todos: rows });
     }
   });
 });
@@ -47,7 +78,7 @@ app.post('/add', (req, res) => {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.redirect('/');
+      res.redirect('/index');
     }
   });
 });
@@ -60,7 +91,7 @@ app.post('/delete', (req, res) => {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.redirect('/');
+      res.redirect('/index');
     }
   });
 });
@@ -74,7 +105,7 @@ app.post('/status_update', (req, res) => {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.redirect('/');
+      res.redirect('/index');
     }
   });
 });

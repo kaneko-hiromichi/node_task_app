@@ -2,8 +2,11 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./todos.db');
 
 db.serialize(() => {
-  // テーブルが存在しない場合に作成
-  db.run("CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)");
+  // タスク用のテーブルを作成
+  db.run("CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT, status INTEGER DEFAULT 0, created_at TEXT)");
+
+  // ユーザー用のテーブルを作成
+  db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT UNIQUE, password TEXT)");
 
   // カラムの存在をチェック
   db.all("PRAGMA table_info(todos)", (err, rows) => {
