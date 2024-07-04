@@ -1,38 +1,95 @@
-<!-- top.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToDo App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>ToDo App</h1>
 
-    <p>リストを表示</p>
-    <ul>
+    <div class="group not-started">
+        <h2>未着手</h2>
+        <ul>
+            <% todos.forEach((todo) => { %>
+                <% if (todo.status === 0) { %>
+                    <div class="task">
+                        <li><%= todo.task %> - <small><%= todo.created_at %></small></li>
+                        <form action="/delete" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <button type="submit">削除</button>
+                        </form>
+                        <form action="/status_update" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <select name="status">
+                                <option value="0" <%= todo.status === 0 ? 'selected' : '' %>>未着手</option>
+                                <option value="1" <%= todo.status === 1 ? 'selected' : '' %>>進行中</option>
+                                <option value="2" <%= todo.status === 2 ? 'selected' : '' %>>完了</option>
+                            </select>
+                            <button type="submit">更新</button>
+                        </form>
+                    </div>
+                <% } %>
+            <% }) %>
+        </ul>
+    </div>
 
-        <% todos.forEach((todo) => { %>
-            <div className="task">
+    <div class="group in-progress">
+        <h2>進行中</h2>
+        <ul>
+            <% todos.forEach((todo) => { %>
+                <% if (todo.status === 1) { %>
+                    <div class="task">
+                        <li><%= todo.task %> - <small><%= todo.created_at %></small></li>
+                        <form action="/delete" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <button type="submit">削除</button>
+                        </form>
+                        <form action="/update" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <select name="status">
+                                <option value="0" <%= todo.status === 0 ? 'selected' : '' %>>未着手</option>
+                                <option value="1" <%= todo.status === 1 ? 'selected' : '' %>>進行中</option>
+                                <option value="2" <%= todo.status === 2 ? 'selected' : '' %>>完了</option>
+                            </select>
+                            <button type="submit">更新</button>
+                        </form>
+                    </div>
+                <% } %>
+            <% }) %>
+        </ul>
+    </div>
 
-                <li><%= todo.id %>:<%=todo.task %></li>
-
-            </div>
-
-        <% }) %>
-
-    </ul>
-
+    <div class="group completed">
+        <h2>完了</h2>
+        <ul>
+            <% todos.forEach((todo) => { %>
+                <% if (todo.status === 2) { %>
+                    <div class="task">
+                        <li><%= todo.task %> - <small><%= todo.created_at %></small></li>
+                        <form action="/delete" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <button type="submit">削除</button>
+                        </form>
+                        <form action="/update" method="POST">
+                            <input type="hidden" name="id" value="<%= todo.id %>">
+                            <select name="status">
+                                <option value="0" <%= todo.status === 0 ? 'selected' : '' %>>未着手</option>
+                                <option value="1" <%= todo.status === 1 ? 'selected' : '' %>>進行中</option>
+                                <option value="2" <%= todo.status === 2 ? 'selected' : '' %>>完了</option>
+                            </select>
+                            <button type="submit">更新</button>
+                        </form>
+                    </div>
+                <% } %>
+            <% }) %>
+        </ul>
+    </div>
 
     <form action="/add" method="POST">
         <input type="text" name="todo" required>
         <button type="submit">送信</button>
     </form>
-    <form action="/delete" method="POST">
-        <input type="number" name="num" required>
-        <button type="submit">削除</button>
-    </form>
-    
 </body>
 </html>
