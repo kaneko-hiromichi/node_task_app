@@ -10,6 +10,10 @@ h1, h2 {
     color: #333;
 }
 
+.create{
+    padding: 15px;
+}
+
 .group {
     margin-bottom: 20px;
     padding: 10px;
@@ -18,15 +22,15 @@ h1, h2 {
 }
 
 .not-started {
-    background-color: #ffebcc; /* 薄いオレンジ */
+    background-color: #ffebcc; 
 }
 
 .in-progress {
-    background-color: #cce5ff; /* 薄い青 */
+    background-color: #cce5ff;
 }
 
 .completed {
-    background-color: #d4edda; /* 薄い緑 */
+    background-color: #d4edda;
 }
 
 ul {
@@ -45,21 +49,38 @@ ul {
     align-items: center;
 }
 
+.task-content {
+    flex-grow: 1;
+}
+
 .task li {
     margin: 0;
     padding: 0;
     font-size: 18px;
     color: #333;
+} 
+
+.task small {
+    font-size: 12px;
+    color: #777;
+}
+
+.task-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
 }
 
 button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 2px 5px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 
 button:hover {
