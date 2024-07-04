@@ -1,0 +1,38 @@
+<!-- top.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo App</title>
+</head>
+<body>
+    <h1>ToDo App</h1>
+
+    <p>リストを表示</p>
+    <ul>
+
+        <% todos.forEach((todo) => { %>
+            <div className="task">
+
+                <li><%= todo.id %>:<%=todo.task %></li>
+
+            </div>
+
+        <% }) %>
+
+    </ul>
+
+
+    <form action="/add" method="POST">
+        <input type="text" name="todo" required>
+        <button type="submit">送信</button>
+    </form>
+    <form action="/delete" method="POST">
+        <input type="number" name="num" required>
+        <button type="submit">削除</button>
+    </form>
+    
+</body>
+</html>
