@@ -1,0 +1,55 @@
+【ログイン時の処理について】
+app.js
+
+======================================
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  db.get("SELECT * FROM users WHERE email = ?",
+    [email], 
+    async (err, user) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("ログインエラー");
+    } else if (!user || !(await bcrypt.compare(password, user.password))) {
+      res.status(400).send("無効なメールアドレスまたはパスワード");
+    } else {
+      req.session.userId = user.id;
+      res.redirect('/index');
+    }
+  });
+});
+
+======================================
+
+if文
+
+if (err) {
+  console.error(err.message);
+  res.status(500).send("ログインエラー");
+}
+条件：データベースアクセス中にエラーが発生した場合。
+具体例：email が空の場合や、データベースに接続できない場合など、クエリの実行に失敗した場合。
+処理：エラーメッセージをログに記録し、500エラー（サーバーエラー）を返します。
+
+
+else if文
+
+else if (!user || !(await bcrypt.compare(password, user.password))) {
+  res.status(400).send("無効なメールアドレスまたはパスワード");
+}
+条件：
+!user：ユーザーが見つからない場合。つまり、指定された email に一致するユーザーがデータベースに存在しない場合。
+!(await bcrypt.compare(password, user.password))：ユーザーが入力したパスワードをハッシュ化して、データベースに保存されているハッシュ化されたパスワードと一致しない場合。
+処理：400エラー（クライアントエラー）を返し、「無効なメールアドレスまたはパスワード」というメッセージを送信します。
+
+
+else文
+
+else {
+  req.session.userId = user.id;
+  res.redirect('/index');
+}
+条件：上記のどちらの条件にも該当しない場合。つまり、email がデータベースに存在し、パスワードも一致する場合。
+処理：ユーザーのIDをセッションに保存し、/index ページにリダイレクトします。

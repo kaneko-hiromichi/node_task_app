@@ -3,6 +3,15 @@ const bodyParser = require('body-parser');
 const db = require('./database');
 
 const app = express();
+const session = require('express-session');
+// express-session の設定
+app.use(session({
+  secret: 'your_secret_key', // セッションIDの署名に使われるキー
+  resave: false, // セッションが変更されていなくても再保存するかどうか
+  saveUninitialized: true, // 新しいセッションを初期化して保存するかどうか
+  cookie: { secure: false } // trueの場合、HTTPSを使う必要があります
+}));
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -31,17 +40,22 @@ app.get('/login',(req,res)=>{
     res.render('login');
 });
 
-app.post('/login',(req,res)=>{
-  const email = req.body.email;
-  const password = req.body.password;
-  if('email/パスワードが一致'){
-    res.redirect('index.ejs')
-  }else{
-    //パスワードが一致しませんと表示
-  }
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
 
-
-})
+  db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("ログインエラー");
+    } else if (!user || !(await bcrypt.compare(password, user.password))) {
+      res.status(400).send("無効なメールアドレスまたはパスワード");
+    } else {
+      console.log('ログインに成功しました')
+      req.session.userId = user.id;
+      res.redirect('/index');
+    }
+  });
+});
 
 
 
