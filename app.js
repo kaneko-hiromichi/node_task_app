@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 const db = require('./database');
 
 const app = express();
-const session = require('express-session');
 // express-session の設定
 app.use(session({
   secret: 'your_secret_key', // セッションIDの署名に使われるキー
@@ -40,7 +40,7 @@ app.get('/login',(req,res)=>{
     res.render('login');
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
@@ -50,12 +50,13 @@ app.post('/login', (req, res) => {
     } else if (!user || !(await bcrypt.compare(password, user.password))) {
       res.status(400).send("無効なメールアドレスまたはパスワード");
     } else {
-      console.log('ログインに成功しました')
-      req.session.userId = user.id;
+      req.session.userId = user.id; // セッションにユーザーIDを保存
+      req.session.username = user.username; // ユーザー名も保存
       res.redirect('/index');
     }
   });
 });
+
 
 
 
@@ -99,21 +100,28 @@ app.post('/register', async (req, res) => {
 
 // タスクの表示
 app.get('/index', (req, res) => {
-  db.all("SELECT * FROM todos", [], (err, rows) => {
+  if (!req.session.userId) {
+    return res.redirect('/login'); // ログインしていない場合はログインページへリダイレクト
+  }
+
+  db.all("SELECT * FROM todos WHERE userId = ?", [req.session.userId], (err, todos) => {
     if (err) {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.render('index', { todos: rows });
+      res.render('index', { todos: todos, username: req.session.username });
     }
   });
 });
 
+
 // 新しいタスクを追加
 app.post('/add', (req, res) => {
   const task = req.body.todo;
-  const createdAt = getJapanTime();
-  db.run("INSERT INTO todos (task, created_at) VALUES (?, ?)", [task, createdAt], (err) => {
+  const createdAt = new Date().toISOString();
+  const userId = req.session.userId; // セッションからユーザーIDを取得
+
+  db.run("INSERT INTO todos (task, created_at, userId) VALUES (?, ?, ?)", [task, createdAt, userId], (err) => {
     if (err) {
       console.error(err.message);
       res.status(500).send("データベースエラー");
@@ -122,6 +130,7 @@ app.post('/add', (req, res) => {
     }
   });
 });
+
 
 // タスクの削除
 app.post('/delete', (req, res) => {
@@ -149,6 +158,20 @@ app.post('/status_update', (req, res) => {
     }
   });
 });
+
+// ログアウト
+app.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send("ログアウトエラー");
+    }
+    res.redirect('/login'); // ログインページにリダイレクト
+  });
+});
+
+
+
+
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
