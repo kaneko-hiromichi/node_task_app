@@ -31,30 +31,56 @@ app.get('/login',(req,res)=>{
     res.render('login');
 });
 
+app.post('/login',(req,res)=>{
+  const email = req.body.email;
+  const password = req.body.password;
+  if('email/パスワードが一致'){
+    res.redirect('index.ejs')
+  }else{
+    //パスワードが一致しませんと表示
+  }
+
+
+})
+
+
+
 //アカウント作成画面
 app.get('/register',(req,res)=>{
     res.render('register');
 });
 
 //アカウント作成処理
-app.post('/register',(req,res)=>{
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
+const bcrypt = require('bcrypt');  //ハッシュ化にかかわるライブラリ【bcrypt】
+
+app.post('/register', async (req, res) => {
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  try {
+    // パスワードをハッシュ化
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // ハッシュ化されたパスワードをデータベースに保存
     db.run(
-        'insert into users(username,email,password) values(?,?,?)',
-        [username,email,password],
-        (err)=>{
-            if (err) {
-                console.error(err.message);
-                res.status(500).send("データベースエラー");
-              } else {
-                
-                res.redirect('/login');
-              }
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+      [username, email, hashedPassword],
+      (err) => {
+        if (err) {
+          console.error(err.message);
+          res.status(500).send("データベースエラー");
+        } else {
+          res.redirect('/login');
         }
-    )
-})
+      }
+    );
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("ハッシュ化エラー");
+  }
+});
+
 
 
 // タスクの表示
