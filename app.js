@@ -46,35 +46,36 @@ function getJapanTime() {
 }
 
 
-
-//ログイン画面
-app.get('/login',(req,res)=>{
-    res.render('login');
+// ログインページを表示
+app.get('/login', (req, res) => {
+  res.render('login', { error: null });
 });
 
+// ログイン機能
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
-    if (err) {
-      console.error(err.message);
-      res.status(500).send("ログインエラー");
-    } else if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.status(400).send("無効なメールアドレスまたはパスワード");
-    } else {
-      req.session.userId = user.id; // セッションにユーザーIDを保存
-      req.session.username = user.username; // ユーザー名も保存
-      res.redirect('/index');
-    }
+      if (err) {
+          console.error(err.message);
+          res.status(500).send("ログインエラー");
+      } else if (!user || !(await bcrypt.compare(password, user.password))) {
+          res.render('login', { error: 'メールアドレスまたはパスワードが正しくありません。' });
+      } else {
+          req.session.userId = user.id; // セッションにユーザーIDを保存
+          req.session.username = user.username; // ユーザー名も保存
+          res.redirect('/index');
+      }
   });
 });
 
 
 
 
+
 //アカウント作成画面
 app.get('/register',(req,res)=>{
-    res.render('register');
+  res.render('register', { register_error: null });
 });
 
 //アカウント作成処理
@@ -96,7 +97,7 @@ app.post('/register', async (req, res) => {
       (err) => {
         if (err) {
           console.error(err.message);
-          res.status(500).send("データベースエラー");
+          res.render('register', { register_error: 'そのアドレスは既に使用されています' });
         } else {
           res.redirect('/login');
         }

@@ -174,3 +174,10 @@
     background: #27a86c;
   }
   
+
+  .error-message {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
