@@ -30,10 +30,22 @@ function getJapanTime() {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
+    hour12: false // 24時間表示
   };
-  return new Intl.DateTimeFormat('ja-JP', options).format(now);
+
+  const formatter = new Intl.DateTimeFormat('ja-JP', options);
+  const parts = formatter.formatToParts(now);
+
+  const dateParts = {};
+  parts.forEach(({ type, value }) => {
+    dateParts[type] = value;
+  });
+
+  return `${dateParts.year}/${dateParts.month}/${dateParts.day} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`;
 }
+
+
 
 //ログイン画面
 app.get('/login',(req,res)=>{
@@ -97,39 +109,52 @@ app.post('/register', async (req, res) => {
 });
 
 
-
 // タスクの表示
 app.get('/index', (req, res) => {
   if (!req.session.userId) {
-    return res.redirect('/login'); // ログインしていない場合はログインページへリダイレクト
+      return res.redirect('/login'); // ログインしていない場合はログインページへリダイレクト
   }
 
   db.all("SELECT * FROM todos WHERE userId = ?", [req.session.userId], (err, todos) => {
-    if (err) {
-      console.error(err.message);
-      res.status(500).send("データベースエラー");
-    } else {
-      res.render('index', { todos: todos, username: req.session.username });
-    }
+      if (err) {
+          console.error(err.message);
+          res.status(500).send("データベースエラー");
+      } else {
+          res.render('index', { todos: todos, username: req.session.username });
+      }
   });
 });
-
 
 // 新しいタスクを追加
 app.post('/add', (req, res) => {
   const task = req.body.todo;
-  const createdAt = new Date().toISOString();
+  const createdAt = getJapanTime();
   const userId = req.session.userId; // セッションからユーザーIDを取得
 
   db.run("INSERT INTO todos (task, created_at, userId) VALUES (?, ?, ?)", [task, createdAt, userId], (err) => {
-    if (err) {
-      console.error(err.message);
-      res.status(500).send("データベースエラー");
-    } else {
-      res.redirect('/index');
-    }
+      if (err) {
+          console.error(err.message);
+          res.status(500).send("データベースエラー");
+      } else {
+          res.redirect('/index');
+      }
   });
 });
+
+// タスクの更新
+app.post('/update_task', (req, res) => {
+  const { id, task } = req.body;
+
+  db.run("UPDATE todos SET task = ? WHERE id = ?", [task, id], (err) => {
+      if (err) {
+          console.error(err.message);
+          res.status(500).send("データベースエラー");
+      } else {
+          res.redirect('/index');
+      }
+  });
+});
+
 
 
 // タスクの削除

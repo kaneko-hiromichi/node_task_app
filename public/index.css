@@ -1,32 +1,103 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
+    background: #eee;
+    -webkit-font-smoothing: antialiased;
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f9;
+    padding: 0;
 }
 
-h1, h2 {
-    text-align: center;
-    color: #333;
+h1,h2 {
+    color: #636363;
+  }
+
+header {
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+    background-color: #fafafa;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#login{
-    text-align: right;
+.header-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.create{
-    padding: 15px;
+header h1 {
+    margin: 0;
+}
+
+#login {
+    margin: 0;
+    list-style: none;
+    padding-right: 30px;
+}
+
+#login a {
+    color: #636363;
+    text-decoration: none;
+}
+
+.create {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.create input {
+    font-size: 18px;
+    padding: 5px;
+    margin-right: 10px;
+    width: 260px;
+}
+
+.create button {
+    font-size: 18px;
+    padding: 5px 10px;
+}
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+    width: 100%;
+    background-color: #fafafa;
+    box-shadow: 0 5px 5px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+
+}
+
+
+
+
+.groups {
+    padding-top: 150px; /* ヘッダーの高さを考慮 */
+    padding-bottom: 90px; /* フッターの高さを考慮 */
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .group {
-    margin-bottom: 20px;
+    margin: 20px;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: calc(33.33% - 40px); /* 横に3つ並べるための幅を調整 */
+    min-width: 200px; /* 最小幅の指定 */
 }
 
 .not-started {
-    background-color: #ffebcc; 
+    background-color: #ffebcc;
 }
 
 .in-progress {
@@ -40,6 +111,7 @@ h1, h2 {
 ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 .task {
@@ -57,12 +129,17 @@ ul {
     flex-grow: 1;
 }
 
-.task li {
-    margin: 0;
-    padding: 0;
-    font-size: 18px;
-    color: #333;
-} 
+.update-task-form textarea{
+        border: none; /* 枠線を消す */
+        background: none; /* 背景色も消す（必要に応じて） */
+        outline: none; /* フォーカス時のアウトラインを消す */
+        font-size: 18px; /* フォントサイズを調整 */
+        color: #333; /* テキストの色を設定 */
+        width: 100%; /* 幅を100%に設定 */
+        padding: 5px; /* パディングを追加 */
+        resize: none; /* リサイズを無効化 */
+    }
+    
 
 .task small {
     font-size: 12px;
@@ -72,21 +149,105 @@ ul {
 .task-buttons {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    min-width: 70px;
     align-items: flex-end;
 }
+
+/* ベーススタイル */
+.status-select {
+    appearance: none; /* デフォルトのドロップダウンスタイルを削除 */
+    background-color: #ffffff; /* 背景色 */
+    border: 2px solid #007bff; /* 枠線 */
+    border-radius: 5px; /* 角の丸み */
+    padding: 5px; /* パディング */
+    font-size: 14px; /* フォントサイズ */
+    color: #333; /* テキスト色 */
+    width: 100%; /* 幅を100%に */
+    max-width: 250px; /* 最大幅 */
+    margin: 10px 0; /* マージン */
+    cursor: pointer; /* カーソル */
+    position: relative; /* 相対位置 */
+    box-shadow: inset 2px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ドロップダウン矢印の追加 */
+.status-select::after {
+    content: '▼'; /* 矢印の内容 */
+    font-size: 12px; /* フォントサイズ */
+    color: #007bff; /* 矢印の色 */
+    position: absolute; /* 絶対位置 */
+    top: 50%; /* 上から50% */
+    right: 10px; /* 右から10px */
+    transform: translateY(-50%); /* 縦中央に揃える */
+    pointer-events: none; /* 矢印のクリック無効化 */
+}
+
+/* フォーカス時のスタイル */
+.status-select:focus {
+    outline: none; /* フォーカス時のアウトラインを削除 */
+    border-color: #0056b3; /* 枠線の色を変更 */
+}
+
+/* オプションスタイル */
+.status-select option {
+    background-color: #ffffff; /* 背景色 */
+    color: #333; /* テキスト色 */
+}
+
 
 button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 2px 5px;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 15px;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+
+    #login {
+        margin: 0;
+    }
+
+    #login a {
+        font-size: 1.2em;
+    }
+
+    .create {
+        margin-top: 10px;
+    }
+
+    .groups {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 200px; /* ヘッダーの高さを考慮 */
+    }
+
+    .group {
+        width: 90%;
+    }
+}
+
+@media (min-width: 769px) {
+    .group {
+        flex: 1;
+        max-width: calc(33.33% - 40px); /* 3つ並べるための幅を指定 */
+    }
 }
