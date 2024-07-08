@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="top.css">
     <title>ToDo App アカウント登録</title>
 </head>
-<body>
-    <form action="register" method="post">
+<hgroup>
+    <h1>ToDo App アカウント登録</h1>
+  </hgroup>
+  <form action="/register" method="post">
+    <div class="group">
+        <input type="text" name="username"><span class="highlight"></span><span class="bar"></span>
+        <label>ユーザーネーム</label>
+      </div>
+    <div class="group">
+      <input type="email" name="email"><span class="highlight"></span><span class="bar"></span>
+      <label>メールアドレス</label>
+    </div>
+    <div class="group">
+      <input type="password" name="password"><span class="highlight"></span><span class="bar"></span>
+      <label>パスワード</label>
+    </div>
+    <input type="submit" value="登録" class="button buttonBlue">
+    <a href="/login" class="button buttonGreen">ログイン画面に戻る</a>
+  </form>
 
-        <p>ユーザーネーム</p>
-        <input type="text" name="username">
-
-        <p>メールアドレス</p>
-        <input type="email" name="email">
-        
-        <p>パスワード</p>
-        <input type="password" name="password">
-        
-        <input type="submit" value="登録">
-    </form>
-
-    <a href="/login">ログイン画面に戻る</a>
 </body>
 </html>
