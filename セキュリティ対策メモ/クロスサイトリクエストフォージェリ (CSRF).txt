@@ -1,0 +1,180 @@
+CSRF攻撃の流れ
+
+    AがCの健全なページのセッションIDを保持:
+        正当なユーザーAが、Cのアプリケーションにログインし、有効なセッションIDを保持しています。
+
+    悪意を持つBがAのセッションIDが開通している状態を利用して、Aを利用してC又はAに攻撃:
+        悪意のあるユーザーBは、AのセッションIDが有効であることを利用して、Aに不正なリンクやフォームをクリックさせようとします。
+        Aがそのリンクやフォームをクリックすると、Aのブラウザに保存されているセッションIDを使用して、Cのアプリケーションに不正なリクエストが送信されます。
+
+具体的なシナリオ
+1. 正当なユーザーAがCのアプリケーションにログイン
+
+    ユーザーAがCのアプリケーションにログインし、ブラウザにセッションIDが保存されます。
+
+2. 悪意のあるユーザーBが不正なリンクやフォームを用意
+
+    Bは、自身のウェブサイト、ブログ、ソーシャルメディアなどに不正なリンクやフォームを埋め込みます。
+
+3. ユーザーAがBの不正なリンクやフォームに誘導される
+
+    Bは、メールやソーシャルメディアを通じて、Aにそのリンクやフォームをクリックさせます。
+
+4. ユーザーAが不正なリンクやフォームをクリック
+
+    Aがリンクをクリックするかフォームを送信すると、Aのブラウザに保存されているセッションIDを使用して、Cのアプリケーションに対して不正なリクエストが送信されます。
+
+具体例
+GETリクエストを利用した攻撃
+
+html
+
+<a href="http://yourapp.com/transfer?amount=1000&to=attacker_account">Click here to win a prize!</a>
+
+Aがこのリンクをクリックすると、以下のリクエストが送信されます：
+
+http
+
+GET /transfer?amount=1000&to=attacker_account HTTP/1.1
+Host: yourapp.com
+Cookie: sessionid=valid-session-id
+
+POSTリクエストを利用した攻撃
+
+html
+
+<form action="http://yourapp.com/change_password" method="POST">
+    <input type="hidden" name="new_password" value="hacked_password">
+    <input type="submit" value="Change Password">
+</form>
+
+Aがこのフォームを送信すると、以下のリクエストが送信されます：
+
+http
+
+POST /change_password HTTP/1.1
+Host: yourapp.com
+Content-Type: application/x-www-form-urlencoded
+Cookie: sessionid=valid-session-id
+
+new_password=hacked_password
+
+まとめ
+
+    CSRF攻撃の基本的な流れ:
+        AがCのアプリケーションにログインし、セッションIDを保持する。
+        BがAを騙して不正なリンクやフォームをクリックさせ、AのセッションIDを利用して不正なリクエストをCに送信する。
+
+    具体的な攻撃手法:
+        GETリクエストを利用した不正なリンク。
+        POSTリクエストを利用した不正なフォーム。
+
+
+1. CSRFトークンの使用
+概要
+
+    各リクエストに対して一意のトークンを生成し、そのトークンを検証することでリクエストの正当性を確認します。
+    サーバー側で生成したトークンをフォームやリクエストに埋め込み、リクエストが送信される際にそのトークンを確認します。
+
+実装例（Node.js + Express）
+
+    必要なパッケージのインストール:
+        express-session: セッション管理用。
+        csurf: CSRFトークン生成・検証用。
+
+    bash
+
+npm install express express-session csurf
+
+アプリケーションの設定:
+
+javascript
+
+    const express = require('express');
+    const session = require('express-session');
+    const csrf = require('csurf');
+
+    const app = express();
+    const csrfProtection = csrf({ cookie: true });
+
+    app.use(session({
+      secret: 'your_secret_key',
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: 'Strict'
+      }
+    }));
+
+    app.use(csrfProtection);
+
+    app.get('/form', (req, res) => {
+      res.send(`<form action="/process" method="POST">
+                  <input type="hidden" name="_csrf" value="${req.csrfToken()}">
+                  <input type="text" name="data">
+                  <input type="submit" value="Submit">
+                </form>`);
+    });
+
+    app.post('/process', (req, res) => {
+      res.send('Form processed');
+    });
+
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+
+2. SameSiteクッキー属性の設定
+概要
+
+    クッキーのSameSite属性を設定することで、クロスサイトリクエストにクッキーが送信されないようにします。
+
+実装例（Node.js + Express）
+
+    セッション設定でSameSite属性を設定:
+
+    javascript
+
+    app.use(session({
+      secret: 'your_secret_key',
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: 'Strict' // または 'Lax'
+      }
+    }));
+
+3. Refererヘッダーの検証
+概要
+
+    リクエストのRefererヘッダーを検証し、正当なドメインからのリクエストのみを受け入れます。
+
+実装例（Node.js + Express）
+
+    Refererヘッダーの検証:
+
+    javascript
+
+    app.post('/process', (req, res) => {
+      const referer = req.get('Referer');
+      if (referer && referer.startsWith('http://yourapp.com')) {
+        res.send('Request accepted');
+      } else {
+        res.status(403).send('Forbidden');
+      }
+    });
+
+まとめ
+
+    CSRFトークンの使用:
+        フォームやリクエストにCSRFトークンを含め、サーバー側でそのトークンを検証することで、リクエストの正当性を確認します。
+
+    SameSiteクッキー属性の設定:
+        クッキーのSameSite属性を設定し、クロスサイトリクエストにクッキーが送信されないようにします。
+
+    Refererヘッダーの検証:
+        リクエストのRefererヘッダーを検証し、正当なドメインからのリクエストのみを受け入れます。

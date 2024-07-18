@@ -1,0 +1,99 @@
+POST /login HTTP/1.1
+Host: localhost:8081
+Content-Length: 41
+Cache-Control: max-age=0
+sec-ch-ua: "Not/A)Brand";v="8", "Chromium";v="126"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Accept-Language: ja
+Upgrade-Insecure-Requests: 1
+Origin: http://localhost:8081
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.127 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: http://localhost:8081/login
+Accept-Encoding: gzip, deflate, br
+Cookie: language=ja_JP; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=WJ3OVByKgk7qpR46jePvAVwcNIJf4OumqhRJUEZd1wMxZoQL2rm5z9blYn8E; connect.sid=s%3AtJOV3BnBzxeseJJZzDbAYTtP-fobqvME.KnA%2B75P9HTxa2LLyT3LsyxNsMCZbGSNoPlkaDnYms5I
+Connection: keep-alive
+
+email=Slime%40gmail.com&password=12345678
+
+==================================================================================================================================
+
+リクエスト行
+
+    POST /login HTTP/1.1
+        POST: HTTPメソッド。データを送信するために使用されます。
+        /login: リクエストの送信先URLパス。ログイン処理を行うエンドポイントです。
+        HTTP/1.1: 使用されているHTTPのバージョンです。
+
+        リクエストヘッダー
+
+    Host: localhost:8081
+        リクエストが送信されるサーバーのホスト名とポート番号です。ここではローカルホストでポート8081を使用しています。
+
+            Content-Length: 41
+        リクエストボディの長さを示します。ここでは41バイトです。
+
+    Cache-Control: max-age=0
+        クライアントがキャッシュを使用しないように指示しています。
+
+    sec-ch-ua: "Not/A)Brand";v="8", "Chromium";v="126"
+        ブラウザのユーザーエージェントクライアントヒントの一部です。使用しているブラウザやレンダリングエンジンのバージョン情報を含みます。
+
+    sec-ch-ua-mobile: ?0
+        クライアントがモバイルデバイスかどうかを示します。ここではモバイルデバイスではないことを示しています（?0）。
+
+    sec-ch-ua-platform: "Windows"
+        クライアントが使用しているプラットフォームを示します。ここではWindowsです。
+
+    Accept-Language: ja
+        クライアントが受け入れる言語を示します。ここでは日本語です。
+
+    Upgrade-Insecure-Requests: 1
+        クライアントがHTTPリクエストをHTTPSにアップグレードするようにリクエストしています。
+
+    Origin: http://localhost:8081
+        リクエストが発生した元のページのURLを示します。CSRF対策のために使用されることがあります。
+
+    Content-Type: application/x-www-form-urlencoded
+        リクエストボディのメディアタイプを示します。フォームデータがURLエンコード形式で送信されることを示します。
+
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.127 Safari/537.36
+        クライアントのブラウザ情報を示します。ここでは、Windows 10上で動作しているChromeブラウザを使用していることがわかります。
+
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        クライアントが受け入れるレスポンスのメディアタイプを示します。複数のタイプがリストされており、品質係数（q）が使用されています。
+
+    Sec-Fetch-Site: same-origin
+        リクエストが発生したサイトのコンテキストを示します。ここでは同一オリジン（same-origin）です。
+
+    Sec-Fetch-Mode: navigate
+        リクエストがナビゲーションコンテキストで発生したことを示します。
+
+    Sec-Fetch-User: ?1
+        ユーザーが操作を行ったことを示します（?1は真を意味します）。
+
+    Sec-Fetch-Dest: document
+        リクエストの目的がドキュメントであることを示します。
+
+    Referer: http://localhost:8081/login
+        リクエストが発生した直前のページのURLを示します。ここではログインページからのリクエストであることがわかります。
+
+    Accept-Encoding: gzip, deflate, br
+        クライアントが受け入れるコンテンツエンコーディングを示します。ここではgzip、deflate、brエンコーディングを受け入れます。
+
+    Cookie: language=ja_JP; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=WJ3OVByKgk7qpR46jePvAVwcNIJf4OumqhRJUEZd1wMxZoQL2rm5z9blYn8E; connect.sid=s%3AtJOV3BnBzxeseJJZzDbAYTtP-fobqvME.KnA%2B75P9HTxa2LLyT3LsyxNsMCZbGSNoPlkaDnYms5I
+        クライアントが保持しているクッキーを示します。セッションID（connect.sid）などが含まれています。
+
+    Connection: keep-alive
+        接続を維持するように指示します。
+
+リクエストボディ
+
+    email=Slime%40gmail.com&password=12345678
+        フォームデータがURLエンコード形式で送信されています。ここでは、emailフィールドにSlime@gmail.com、passwordフィールドに12345678が入力されています。

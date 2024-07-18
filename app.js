@@ -3,13 +3,16 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const db = require('./database');
 
-const app = express();
-// express-session の設定
 app.use(session({
-  secret: 'your_secret_key', // セッションIDの署名に使われるキー
-  resave: false, // セッションが変更されていなくても再保存するかどうか
-  saveUninitialized: true, // 新しいセッションを初期化して保存するかどうか
-  cookie: { secure: false } // trueの場合、HTTPSを使う必要があります
+  secret: 'your_secret_key', // セッションIDの署名に使われるキー。十分に長くてランダムな文字列を使用する
+  resave: false, // セッションが変更されていなくても再保存しない
+  saveUninitialized: false, // 新しいセッションを初期化して保存しない
+  cookie: {
+    secure: true, // HTTPSを使用してクッキーを送信する
+    httpOnly: true, // クッキーをJavaScriptからアクセスできないようにする
+    sameSite: 'strict', // クロスサイトのリクエストでクッキーが送信されないようにする
+    maxAge: 60000 // セッションの有効期限（ミリ秒単位）
+  }
 }));
 
 
@@ -172,22 +175,23 @@ app.post('/delete', (req, res) => {
 });
 
 // タスクの進行具合を更新
+//ステータスが更新されたら/status_updateにpostされる
 app.post('/status_update', (req, res) => {
-  const id = req.body.id;
-  const status = req.body.status;
+  const id = req.body.id;  //更新するタスクのidを取得 どのタスクを更新するかのキー(where)
+  const status = req.body.status;  //更新後のステータスを取得
   db.run('UPDATE todos SET status = ? WHERE id = ?', [status, id], (err) => {
     if (err) {
       console.error(err.message);
       res.status(500).send("データベースエラー");
     } else {
-      res.redirect('/index');
+      res.redirect('/index');  //更新が正常に完了したら/indexにリダイレクト
     }
   });
 });
 
 // ログアウト
 app.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
+  req.session.destroy((err) => {  //req.session.destroy(()=>{}) sessionの削除
     if (err) {
       return res.status(500).send("ログアウトエラー");
     }
